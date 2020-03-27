@@ -11,6 +11,25 @@ To set up an evironment open a terminal in the project folder
 `pip install -r requirements.txt` to install dependancies into the vm
 <br/><br/>
 
+### Docker
+
+Run container
+```
+docker run -v /scratch/2020-02-05:/mnt acicarizona/ps2top-bin2png -d /mnt/
+docker run -v /scratch/2020-02-05:/mnt acicarizona/ps2top-img_segmentation -d /mnt/
+docker run -v /scratch/2020-02-05:/mnt/data -v /scratch/2020-02-05_out:/mnt/out acicarizona/ps2top-fluorescence_aggregation -d /mnt/out -o /mnt/out
+```
+
+Build container locally for each steps (`bin2png`, `img_segmentation`, `fluorescence_aggregation`)
+```
+git clone https://github.com/uacic/FLIP.git
+cd FLIP
+git checkout dev
+docker build --build-arg STEP=bin2png -t ps2top-bin2png -f bin2png/Dockerfile .
+docker build --build-arg STEP=img_segmentation -t ps2top-img_segmentation -f img_segmentation/Dockerfile .
+docker build --build-arg STEP=fluorescence_aggregation -t ps2top-fluorescence_aggregation -f fluorescence_aggregation/Dockerfile .
+```
+
 #### CLI (command line interface)
 
 To run the cli, run `python FLIP.py -d <ps2 collection directory> -o <output directory>`
