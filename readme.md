@@ -17,7 +17,7 @@ Run container
 ```
 docker run -v /scratch/2020-02-05:/mnt acicarizona/ps2top-bin2png -d /mnt/
 docker run -v /scratch/2020-02-05:/mnt acicarizona/ps2top-img_segmentation -d /mnt/
-docker run -v /scratch/2020-02-05:/mnt/data -v /scratch/2020-02-05_out:/mnt/out acicarizona/ps2top-fluorescence_aggregation -d /mnt/out -o /mnt/out
+docker run -v /scratch/2020-02-05:/mnt/data -v /scratch/2020-02-05_out:/mnt/out acicarizona/ps2top-fluorescence_aggregation -d /mnt/data -o /mnt/out
 ```
 
 Build container locally for each steps (`bin2png`, `img_segmentation`, `fluorescence_aggregation`)
