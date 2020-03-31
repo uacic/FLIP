@@ -125,19 +125,19 @@ def apply_threshold(filepath):
 
     return output_list
 
-def process_dir(filepath):
+def process_dir(filepath, output_dir):
     """
     finds all pngs in a directory and outputs a 
     csv of thresholded images
     """
 
     # finding all png files in the subdirectory
-    image_paths = [
-        os.path.join(filepath, f) 
-        for f in os.listdir(filepath) 
-        if f.endswith(".png")
-        if not f.endswith("101.png") # image 101 cannot be read properly, skip it
-    ]
+    image_paths = []
+    with os.scandir(filepath) as it:
+        for entry in it:
+            if entry.is_file() and entry.name.endswith(".png")
+                and not entry.name.endswith("101.png"): # image 101 cannot be read properly, skip it
+                image_paths.append(entry.path)
 
     image_dicts = []
     for ip in image_paths:
@@ -146,29 +146,39 @@ def process_dir(filepath):
     df = pd.DataFrame(image_dicts)
 
 
-    output_dir = os.path.join(filepath, os.path.basename(filepath) + ".csv")
-    df.to_csv(output_dir)
-    print(output_dir, "created")
+    output_filename = os.path.basename(filepath)
+    if output_filename[-1] == '/':
+        output_filename = output_filename[:-1]
+    output_filename += ".csv"
 
-def process_collection(filepath, processes=-1):
+    output_path = os.path.join(output_dir, output_filename)
+    df.to_csv(output_path)
+    print(output_path, "created")
+
+def process_collection(input_base_dir, output_base_dir, processes=-1):
     """
     finds all directories in a ps2 collection 
     and runs process_dir() on each of them
     using multiprocessing
     """
 
-    # finding all directories to process
-    for root, dirs, files in os.walk(filepath):
+    directories = []
+    output_dirs = []
+    with os.scandir(input_base_dir) as it:
+        # scan all sub dir inside the base input directory
+        for entry in it:
+            if entry.is_dir():
+                directories.append(entry.path)
+                # create sub dir of the same name as the input
+                output_dir = os.path.join(output_base_dir, entry.name)
+                os.mkdir(output_dir)
+                output_dirs.append(output_dir)
 
-        # getting each directory in the main folder
-        directories = [os.path.join(root, d) for d in dirs]
+    if processes < 1:
+        processes = multiprocessing.cpu_count()
 
-        if processes < 1:
-            processes = multiprocessing.cpu_count()
-        with multiprocessing.Pool(processes) as p:
-            p.map(process_dir, directories)
-
-        break # make sure we only go one level deep
+    with multiprocessing.Pool(processes) as p:
+        p.map(process_dir, directories, output_dirs)
         
 if __name__ == "__main__":
     # print(apply_threshold('test_img1.png'))

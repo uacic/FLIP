@@ -11,6 +11,7 @@ import argparse
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--directory', required=True, help="directory to ps2 collection, also the output directory")
+    parser.add_argument('-o', '--output', required=True, help="directory for output files.")
     parser.add_argument('-p', '--processes', type=int, help="max spawnable processes used by multiprocessing", default=-1)
 
     args = parser.parse_args()
@@ -21,7 +22,7 @@ def main():
 
     # segmenting images using new python macro
     print("segmenting images")
-    image_segmentation.process_collection(args.directory, args.processes)
+    image_segmentation.process_collection(args.directory, args.output, args.processes)
 
 if __name__ == "__main__":
     main()
