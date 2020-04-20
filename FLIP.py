@@ -54,7 +54,7 @@ def headless(directory, output, processes=-1):
     fluorescence_aggregation.generate_aggregate(
         directory,
         output,
-        os.path.join(this_dir, "static", 'Plot boundaries.xlsx'),
+        os.path.join(this_dir, "static", 'S10_Plot_boundaries.csv'),
         os.path.join(this_dir, "static", 'multithresh.json'),
         ps2_x, 
         ps2_y
@@ -129,14 +129,14 @@ def gui():
 
     # calling single process
     # using a file dialog, ask the user for a collection path
-    # use the Plot boundaries.xlsx and multithresh json next to this file
+    # use the Plot boundaries.csv and multithresh json next to this file
     # use offsets from sensor_fixed_metadata.json
     generate_aggregate_btn = tkinter.ttk.Button(
         root, 
         text="Generate Aggregate and Fluorescence", 
         command=lambda: fluorescence_aggregation.single_process(
             filepath=fd.askdirectory(title="Please select a ps2 collection"),
-            plot_boundaries=os.path.join(this_dir, 'static', 'Plot boundaries.xlsx'),
+            plot_boundaries=os.path.join(this_dir, 'static', 'S10_Plot_boundaries.csv'),
             multithresh_json=os.path.join(this_dir, 'static', 'multithresh.json'),
             offset_x=ps2_x,
             offset_y=ps2_y
@@ -152,8 +152,8 @@ if __name__ == "__main__":
     import argparse
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--directory', help="directory to ps2 collection")
-    parser.add_argument('-o', '--output', help="directory for output files.")
+    parser.add_argument('-d', '--directory', required=True, help="directory to ps2 collection")
+    parser.add_argument('-o', '--output', required=True, help="directory for output files.")
     parser.add_argument('-p', '--processes', help="max spawnable processes used by multiprocessing", default=-1)
     # parser.add_argument('-m', '--macro', help="filepath to an imagej macro", required=True)
 

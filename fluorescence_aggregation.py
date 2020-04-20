@@ -19,6 +19,7 @@ import datetime
 import json
 import multiprocessing
 import os
+import csv
 from pathlib import Path
 
 import pandas as pd
@@ -121,16 +122,18 @@ def generate_aggregate(filepath, final_output, plot_boundaries_filepath, multith
         return
 
     # reading a file defining plot boundaries
-    plot_boundaries_df = pd.read_excel(plot_boundaries_filepath)
-    plot_boundaries_df = plot_boundaries_df[['Plot', 'X Start', 'X End', 'Y Start', 'Y End']]
+    # plot_boundaries_df = pd.read_excel(plot_boundaries_filepath)
+    #plot_csv = csv.reader(plot_boundaries_filepath)
+    plot_boundaries_df = pd.read_csv(plot_boundaries_filepath)
+    plot_boundaries_df = plot_boundaries_df[['Plot', 'X-Start', 'X-End', 'Y-Start', 'Y-End']]
 
 
     # finding all records in concat df that fall inside a plot's
     # boundaries and labeling them with that plot's id
     for index, row in plot_boundaries_df.iterrows():
         concat_df.loc[
-            ((concat_df['x'] >= row['X Start']) & (concat_df['x'] < row['X End'])) &
-            ((concat_df['y'] >= row['Y Start']) & (concat_df['y'] < row['Y End'])),
+            ((concat_df['x'] >= row['X-Start']) & (concat_df['x'] < row['X-End'])) &
+            ((concat_df['y'] >= row['Y-Start']) & (concat_df['y'] < row['Y-End'])),
             'Plot'
         ] = int(row['Plot'])
 
@@ -254,7 +257,7 @@ def single_process(filepath, plot_boundaries, multithresh_json, offset_x=0, offs
     generate aggregate and generate fluorescence
 
     filepath: a filepath to a collection of ps2 data
-    plot_boundaries: a filepath to a "Plot boundaries.xlsx" file
+    plot_boundaries: a filepath to a "Plot boundaries.csv" file
     multithresh_json: a filepath to a multithresh.json file
     """
 
@@ -304,7 +307,7 @@ def batch_process(filepath):
     with multiprocessing.Pool(multiprocessing.cpu_count()) as p:
         # starmap lets a function multiprocess on a list of tuples 
         # and each tuple is passed as arguments
-        plot_boundaries_path  = os.path.join(this_dir, "static", "Plot boundaries.xlsx")
+        plot_boundaries_path  = os.path.join(this_dir, "static", "S10_Plot_boundaries.csv")
         multithresh_json_path = os.path.join(this_dir, "static", "multithresh.json")
 
         p.starmap(
